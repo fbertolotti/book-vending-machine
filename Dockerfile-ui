@@ -1,0 +1,11 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY ./ui/package*.json ./
+
+RUN npm install
+
+COPY docker/ui/start.sh /usr/local/bin/start.sh
+
+CMD [ "/usr/local/bin/start.sh" ]

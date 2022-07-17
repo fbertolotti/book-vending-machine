@@ -1,0 +1,40 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-api
+    volumes:
+      - ./api:/var/www/app:rw
+    environment:
+      DATABASE_PASSWORD: $DATABASE_PASSWORD
+      VIRTUAL_HOST: api.bvm.localhost
+    working_dir: /var/www/app
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile-ui
+    volumes:
+      - ./ui:/app:rw
+    environment:
+      VIRTUAL_HOST: app.bvm.localhost
+      VIRTUAL_PORT: 3000
+  db:
+    image: mysql:8
+    volumes:
+      - db-data:/var/lib/mysql:rw
+      - ./docker/db:/docker-entrypoint-initdb.d:ro
+    environment:
+      MYSQL_ROOT_PASSWORD: $DATABASE_PASSWORD
+  db-ui:
+    image: adminer
+    environment:
+      VIRTUAL_HOST: database.bvm.localhost
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+
+volumes:
+  db-data: {}
